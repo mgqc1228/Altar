@@ -12,24 +12,30 @@ body{display:flex;flex-direction:column;align-items:center;overflow-x:hidden}
 header{text-align:center;padding:10px 12px 0}
 h1{margin:0;font-size:clamp(1.1rem,3.6vw,2rem);color:var(--or);letter-spacing:.04em}
 header p{margin:2px 0 0;font-size:clamp(.75rem,2.2vw,1rem);opacity:.85}
-#stage{position:relative;width:min(96vw,calc((100dvh - 90px) * .8));aspect-ratio:4/5;margin:6px auto}
-#stage>img.base{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
-.it{position:absolute;transform:translate(-50%,-100%);background:none;border:0;padding:0;cursor:pointer;transition:transform .2s,filter .2s;-webkit-tap-highlight-color:transparent}
-.it img{display:block;width:100%;height:auto;pointer-events:none}
-.it:hover,.it:focus-visible{transform:translate(-50%,-100%) scale(1.12);filter:drop-shadow(0 0 10px var(--or));outline:none;z-index:5}
-.vela{position:absolute;transform:translate(-50%,-100%);pointer-events:none}
+#stage{position:relative;width:min(96vw,calc((100dvh - 90px) * .8));aspect-ratio:4/5;margin:6px auto;isolation:isolate;overflow:hidden;border-radius:14px;background:radial-gradient(circle at 50% 35%,#fffaf0,#f1e2c4);box-shadow:0 0 60px rgba(230,126,34,.25),0 20px 40px rgba(0,0,0,.6)}
+#stage>img.base{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}
+.it{position:absolute;background:none;border:0;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.it img{display:block;width:100%;height:auto;mix-blend-mode:multiply;transform-origin:50% 100%;transition:transform .25s}
+.it:hover img,.it:focus-visible img{transform:scale(1.18)}
+.it:focus-visible{outline:2px solid var(--or);outline-offset:2px;border-radius:8px}
+.vela{position:absolute;transform:translate(-50%,-100%);pointer-events:none;mix-blend-mode:normal}
 .vela img{width:100%;display:block}
 #hint{font-size:.8rem;opacity:.7;margin:0 0 8px;text-align:center}
-/* cortina de pétalos */
-#cortina{position:fixed;inset:0;z-index:50;pointer-events:none;transform:translateY(-105%);transition:transform .8s cubic-bezier(.65,0,.35,1);background:#e8890c url(petalo.jpg) center top/150px repeat;box-shadow:0 12px 30px rgba(0,0,0,.5)}
-#cortina.baja{transform:translateY(0);pointer-events:all}
-#cortina.sube{transform:translateY(105%)}
-#cortina.reset{transition:none}
+/* pétalos que cubren la pantalla */
+.petals-container{position:fixed;inset:0;z-index:2000;overflow:hidden;display:none}
+.petals-container.active{display:block}
+.veil{position:absolute;inset:0;opacity:0;background:radial-gradient(circle at 50% 50%,rgba(230,126,34,.55),rgba(90,25,5,.85));animation:veil 3.6s ease-in-out forwards}
+@keyframes veil{0%{opacity:0}32%{opacity:1}60%{opacity:1}100%{opacity:0}}
+.petal{position:absolute;opacity:0;width:var(--sz);height:var(--h);animation:sweep 3.4s ease-in-out forwards;will-change:transform,opacity}
+.petal.photo{background:var(--petal) center/contain no-repeat}
+.petal.css{border-radius:50% 0 50% 50%/60% 0 60% 60%;background:radial-gradient(ellipse at 30% 25%,#ffd36b 0%,var(--c) 55%,#a63d00 100%);box-shadow:inset -3px -4px 8px rgba(120,40,0,.35)}
+@keyframes sweep{0%{opacity:0;transform:translate(var(--dx),-45vh) rotate(0deg) scale(.4)}30%{opacity:1;transform:translate(0,0) rotate(var(--r1)) scale(1)}62%{opacity:1;transform:translate(var(--sway),2vh) rotate(var(--r2)) scale(1.05)}100%{opacity:.9;transform:translate(var(--sway2),140vh) rotate(var(--r3)) scale(.9)}}
 /* ventana */
 #modal{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(18,6,26,.88)}
 #modal.on{display:flex}
 .card{position:relative;max-width:560px;width:100%;max-height:92dvh;overflow:auto;background:linear-gradient(#2a0d3a,#1a0828);border:3px solid var(--or);border-radius:16px;padding:20px 18px 18px;text-align:center;box-shadow:0 0 40px rgba(255,157,26,.35)}
-.card img{width:min(46%,190px);height:auto;max-height:34dvh;object-fit:contain;filter:drop-shadow(0 0 12px rgba(255,157,26,.6))}
+.iw{isolation:isolate;display:inline-block;max-width:100%;padding:10px;border-radius:14px;background:radial-gradient(circle at 50% 40%,#fffaf0,#eadcc0)}
+.iw img{display:block;width:auto;max-width:100%;max-height:34dvh;mix-blend-mode:multiply}
 .card h2{margin:8px 0 2px;color:var(--or);font-size:clamp(1.3rem,5vw,1.8rem)}
 .card .nv{font-size:.85rem;opacity:.7;margin:0 0 10px}
 .card p.d{text-align:left;line-height:1.55;font-size:clamp(.95rem,3.4vw,1.05rem);margin:0 0 10px}
@@ -43,21 +49,21 @@ footer{font-size:.72rem;opacity:.6;text-align:center;padding:4px 10px 10px}
   <h1>Altar de Muertos para Selena</h1>
   <p>Toca cada elemento para conocer su significado</p>
 </header>
-<div id="stage"><img class="base" src="altar.jpg" alt="Altar de siete niveles"></div>
+<div id="stage"></div>
 <p id="hint"></p>
 <footer>Fuentes: INPI, UNAM, SEP (aprende.gob.mx), Smithsonian Folklife, Tecnológico de Monterrey. Los altares varían según la región y la familia.</footer>
 <div id="modal" role="dialog" aria-modal="true" aria-labelledby="mt">
   <div class="card"><button id="x" aria-label="Cerrar">✕</button>
-    <img id="mi" alt=""><h2 id="mt"></h2><p class="nv" id="mn"></p><p class="d" id="md"></p><small id="ms"></small></div>
+    <div class="iw"><img id="mi" alt=""></div><h2 id="mt"></h2><p class="nv" id="mn"></p><p class="d" id="md"></p><small id="ms"></small></div>
 </div>
-<div id="cortina"></div>
+<div class="petals-container" id="petalsContainer"></div>
 
 <script>
 /* ===== CONFIGURACIÓN =====
    x,y = punto de apoyo (centro-abajo) del elemento en % del altar. w = ancho en %.
    Ajusta posiciones con:  index.html?edit  (arrastra y copia los números de la consola) */
 const ITEMS=[
-{id:"arco",img:"arco.jpg",x:50,y:30,w:62,nv:"Cúspide del altar",t:"El arco",
+{id:"arco",img:"arco.jpg",x:50,y:40,w:50,nv:"Cúspide del altar",t:"El arco",
  d:"Se coloca en lo más alto del altar y simboliza la entrada al mundo de los muertos, el umbral que las ánimas cruzan para visitar a sus familias. Suele adornarse con flor de cempasúchil y otros elementos naturales.",s:"Tradición popular; varía por región"},
 {id:"crucifijo",img:"crucifijo.jpg",x:50,y:24,w:10,nv:"Nivel 7 · La cruz",t:"El crucifijo",
  d:"La cruz se incorporó a la ofrenda después de la evangelización y se coloca en la parte superior. Puede formarse también con sal, ceniza o pétalos de cempasúchil; en el último caso simboliza purificación y la expiación de culpas pendientes.",s:"Fuente: tradición recopilada por Ecoosfera y medios que citan al INPI"},
@@ -79,56 +85,70 @@ const ITEMS=[
  d:"Es una resina de origen prehispánico que se quema como sahumerio. Su humo limpia el lugar y aleja a los malos espíritus; es uno de los elementos indígenas de la ofrenda.",s:"Fuente: INPI / UNAM"},
 {id:"incienso",img:"incienso.jpg",x:67,y:69,w:11,nv:"Nivel 2 · Sahumerio",t:"El incienso",
  d:"Junto con el copal, su aroma purifica el espacio y guía a las ánimas hacia el altar. Representa la elevación de las oraciones.",s:"Fuente: INPI / SEP"},
-{id:"flores",img:"flores.jpg",x:50,y:82,w:30,nv:"Nivel 1 · Camino de flores",t:"Flores de cempasúchil",
+{id:"flores",img:"flores.jpg",x:50,y:90,w:18,nv:"Nivel 1 · Camino de flores",t:"Flores de cempasúchil",
  d:"Su nombre viene del náhuatl «cempohualxóchitl», «veinte flores». Su color intenso y su aroma guían a las ánimas de regreso al altar, y se forman caminos de pétalos desde la entrada hasta la ofrenda.",s:"Fuente: INPI / UNAM / Smithsonian Folklife"}
 ];
 /* velas decorativas (gif) repartidas por el altar */
 const VELAS=[[18,36,7],[82,36,7],[20,47,7],[80,47,7],[22,58,7],[78,58,7],[20,69,7],[80,69,7],[38,82,6],[62,82,6]];
-const stage=document.getElementById("stage");
-VELAS.forEach(([x,y,w])=>{const v=document.createElement("div");v.className="vela";v.style.cssText=`left:${x}%;top:${y}%;width:${w}%`;v.innerHTML='<img src="vela.gif" alt="">';stage.appendChild(v)});
+/* Carpeta de las imágenes. Junto al index.html déjalo vacío ""; si estuvieran en una carpeta: "img/" */
+const IMG_DIR="";
+const stage=document.getElementById("stage"),M=document.getElementById("modal");
+const base=new Image();base.className="base";base.alt="Altar de siete niveles";base.src=IMG_DIR+"altar.jpg";stage.appendChild(base);
+VELAS.forEach(([x,y,w])=>{const v=document.createElement("div");v.className="vela";v.style.cssText=`left:${x}%;top:${y}%;width:${w}%`;v.innerHTML=`<img src="${IMG_DIR}vela.gif" alt="">`;stage.appendChild(v)});
+/* sin transform en el botón: así el "multiply" de la imagen se mezcla con el fondo y el blanco del JPG desaparece */
 ITEMS.forEach(o=>{const b=document.createElement("button");b.className="it";b.id="it-"+o.id;b.setAttribute("aria-label",o.t);
- b.style.cssText=`left:${o.x}%;top:${o.y}%;width:${o.w}%`;b.innerHTML=`<img src="${o.img}" alt="${o.t}">`;
+ b.style.cssText=`left:${o.x-o.w/2}%;bottom:${100-o.y}%;width:${o.w}%`;b.innerHTML=`<img src="${IMG_DIR+o.img}" alt="${o.t}">`;
  b.onclick=()=>{if(!EDIT)abrir(o)};stage.appendChild(b)});
 
-/* ===== cortina de pétalos ===== */
-const C=document.getElementById("cortina"),M=document.getElementById("modal");
-const esperar=ms=>new Promise(r=>setTimeout(r,ms));
-let ocupado=false;
-async function cortina(entre){ // baja, ejecuta cambio, sube
-  C.className="reset";void C.offsetWidth;C.className="";void C.offsetWidth;
-  C.classList.add("baja");await esperar(850);
-  entre();await esperar(150);
-  C.classList.add("sube");await esperar(850);
-  C.className="reset";
+/* ===== pétalo: se prepara una sola vez (quita el blanco de petalo.jpg) ===== */
+let busy=false,petalURL=null,petalRatio=.8;
+(function(){const im=new Image();im.onload=()=>{try{
+ const s=Math.min(1,160/Math.max(im.naturalWidth,im.naturalHeight)),w=Math.round(im.naturalWidth*s),h=Math.round(im.naturalHeight*s);
+ const c=document.createElement("canvas");c.width=w;c.height=h;const g=c.getContext("2d");g.drawImage(im,0,0,w,h);
+ const d=g.getImageData(0,0,w,h),px=d.data;let x0=w,y0=h,x1=0,y1=0;
+ for(let i=0;i<px.length;i+=4){const a=Math.max(0,Math.min(1,(255-px[i+2]-20)/110));
+  if(a>0){for(let k=0;k<3;k++)px[i+k]=Math.max(0,Math.min(255,(px[i+k]-255*(1-a))/a));
+   if(a>.5){const p=i/4,x=p%w,y=(p/w)|0;x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y)}}
+  px[i+3]=a*255}
+ g.putImageData(d,0,0);const bw=x1-x0+1,bh=y1-y0+1,o=document.createElement("canvas");o.width=bw;o.height=bh;
+ o.getContext("2d").drawImage(c,x0,y0,bw,bh,0,0,bw,bh);petalURL=o.toDataURL("image/png");petalRatio=bw/bh}catch(e){petalURL=null}};
+ im.src=IMG_DIR+"petalo.jpg"})();
+
+/* ===== cortina: 160 pétalos que caen, giran y cubren la pantalla ===== */
+const colores=["#f39c12","#e67e22","#ff9f1c","#d35400","#f5b041"],rand=(a,b)=>a+Math.random()*(b-a);
+function petalStorm(onCovered){
+ if(matchMedia("(prefers-reduced-motion: reduce)").matches){onCovered();return}
+ busy=true;const box=document.getElementById("petalsContainer"),vw=innerWidth,vh=innerHeight;
+ const N=160,size=Math.min(140,Math.max(40,Math.sqrt(1.6*vw*vh/(N*.7))));
+ box.innerHTML='<div class="veil"></div>';box.classList.add("active");
+ if(petalURL)box.style.setProperty("--petal",`url(${petalURL})`);
+ for(let i=0;i<N;i++){const p=document.createElement("div"),sz=size*rand(.6,1.4);
+  p.className="petal "+(petalURL?"photo":"css");
+  p.style.cssText=`left:${rand(-3,100)}vw;top:${rand(-3,100)}vh;--sz:${sz}px;--h:${sz/(petalURL?petalRatio:.8)}px;--c:${colores[i%5]};`+
+   `--dx:${rand(-15,15)}vw;--r1:${rand(-200,200)}deg;--r2:${rand(-300,300)}deg;--r3:${rand(-720,720)}deg;--sway:${rand(-6,6)}vw;--sway2:${rand(-20,20)}vw;animation-delay:${rand(0,.7)}s;`;
+  box.appendChild(p)}
+ setTimeout(onCovered,1500);
+ setTimeout(()=>{box.classList.remove("active");box.innerHTML="";busy=false},4300);
 }
-async function abrir(o){
-  if(ocupado)return;ocupado=true;
-  await cortina(()=>{
-    mi.src=o.img;mi.alt=o.t;mt.textContent=o.t;mn.textContent=o.nv;md.textContent=o.d;ms.textContent=o.s;
-    M.classList.add("on");x.focus();
-  });ocupado=false;
-}
-async function cerrar(){
-  if(ocupado||!M.classList.contains("on"))return;ocupado=true;
-  await cortina(()=>M.classList.remove("on"));ocupado=false;
-}
+function abrir(o){if(busy)return;petalStorm(()=>{mi.src=IMG_DIR+o.img;mi.alt=o.t;mt.textContent=o.t;mn.textContent=o.nv;md.textContent=o.d;ms.textContent=o.s;M.classList.add("on");M.scrollTop=0;x.focus()})}
+function cerrar(){if(busy||!M.classList.contains("on"))return;petalStorm(()=>M.classList.remove("on"))}
 const [mi,mt,mn,md,ms,x]=["mi","mt","mn","md","ms","x"].map(i=>document.getElementById(i));
 x.onclick=cerrar;
 document.addEventListener("keydown",e=>{if(e.key==="Escape")cerrar()});
 
 /* ===== modo edición: index.html?edit ===== */
 const EDIT=location.search.includes("edit");
-if(EDIT){
-  document.getElementById("hint").textContent="MODO EDICIÓN: arrastra los elementos; las coordenadas salen en la consola (F12).";
-  document.querySelectorAll(".it").forEach(b=>{
-    b.style.touchAction="none";
-    b.onpointerdown=e=>{b.setPointerCapture(e.pointerId);
-      b.onpointermove=ev=>{const r=stage.getBoundingClientRect();
-        b.style.left=((ev.clientX-r.left)/r.width*100).toFixed(1)+"%";
-        b.style.top=((ev.clientY-r.top)/r.height*100+ (b.offsetHeight/2)/r.height*100).toFixed(1)+"%"};
-      b.onpointerup=()=>{b.onpointermove=null;console.log(b.id.slice(3),"x:",parseFloat(b.style.left),"y:",parseFloat(b.style.top),"w:",parseFloat(b.style.width))}};
-  });
+function setupEdit(){
+ document.getElementById("hint").textContent="MODO EDICIÓN: arrastra los elementos; los números salen en la consola (F12).";
+ document.querySelectorAll(".it").forEach(b=>{b.style.touchAction="none";
+  b.onpointerdown=e=>{e.preventDefault();b.setPointerCapture(e.pointerId);
+   b.onpointermove=ev=>{const r=stage.getBoundingClientRect(),w=parseFloat(b.style.width);
+    b.style.left=((ev.clientX-r.left)/r.width*100-w/2).toFixed(1)+"%";
+    b.style.bottom=(100-(ev.clientY-r.top+b.offsetHeight/2)/r.height*100).toFixed(1)+"%"};
+   b.onpointerup=()=>{b.onpointermove=null;const w=parseFloat(b.style.width);
+    console.log(b.id.slice(3)+": x:"+(parseFloat(b.style.left)+w/2).toFixed(1)+", y:"+(100-parseFloat(b.style.bottom)).toFixed(1)+", w:"+w)}}});
 }
+if(EDIT)setupEdit();
 </script>
 </body>
 </html>
