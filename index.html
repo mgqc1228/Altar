@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Altar de Muertos · Selena Quintanilla</title>
+<style>
+:root{--or:#ff9d1a;--mo:#6a1b6e;--noche:#12061a;--crema:#fff1d6}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:radial-gradient(ellipse at 50% 30%,#3b1250,var(--noche) 70%);color:var(--crema);font-family:Georgia,"Times New Roman",serif}
+body{display:flex;flex-direction:column;align-items:center;overflow-x:hidden}
+header{text-align:center;padding:10px 12px 0}
+h1{margin:0;font-size:clamp(1.1rem,3.6vw,2rem);color:var(--or);letter-spacing:.04em}
+header p{margin:2px 0 0;font-size:clamp(.75rem,2.2vw,1rem);opacity:.85}
+#stage{position:relative;width:min(96vw,calc((100dvh - 90px) * .8));aspect-ratio:4/5;margin:6px auto}
+#stage>img.base{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.it{position:absolute;transform:translate(-50%,-100%);background:none;border:0;padding:0;cursor:pointer;transition:transform .2s,filter .2s;-webkit-tap-highlight-color:transparent}
+.it img{display:block;width:100%;height:auto;pointer-events:none}
+.it:hover,.it:focus-visible{transform:translate(-50%,-100%) scale(1.12);filter:drop-shadow(0 0 10px var(--or));outline:none;z-index:5}
+.vela{position:absolute;transform:translate(-50%,-100%);pointer-events:none}
+.vela img{width:100%;display:block}
+#hint{font-size:.8rem;opacity:.7;margin:0 0 8px;text-align:center}
+/* cortina de pétalos */
+#cortina{position:fixed;inset:0;z-index:50;pointer-events:none;transform:translateY(-105%);transition:transform .8s cubic-bezier(.65,0,.35,1);background:#e8890c url(petalo.jpg) center top/150px repeat;box-shadow:0 12px 30px rgba(0,0,0,.5)}
+#cortina.baja{transform:translateY(0);pointer-events:all}
+#cortina.sube{transform:translateY(105%)}
+#cortina.reset{transition:none}
+/* ventana */
+#modal{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(18,6,26,.88)}
+#modal.on{display:flex}
+.card{position:relative;max-width:560px;width:100%;max-height:92dvh;overflow:auto;background:linear-gradient(#2a0d3a,#1a0828);border:3px solid var(--or);border-radius:16px;padding:20px 18px 18px;text-align:center;box-shadow:0 0 40px rgba(255,157,26,.35)}
+.card img{width:min(46%,190px);height:auto;max-height:34dvh;object-fit:contain;filter:drop-shadow(0 0 12px rgba(255,157,26,.6))}
+.card h2{margin:8px 0 2px;color:var(--or);font-size:clamp(1.3rem,5vw,1.8rem)}
+.card .nv{font-size:.85rem;opacity:.7;margin:0 0 10px}
+.card p.d{text-align:left;line-height:1.55;font-size:clamp(.95rem,3.4vw,1.05rem);margin:0 0 10px}
+.card small{display:block;opacity:.65;font-size:.78rem;text-align:left}
+#x{position:absolute;top:8px;right:10px;width:44px;height:44px;border-radius:50%;border:2px solid var(--or);background:#12061a;color:var(--or);font-size:1.4rem;cursor:pointer}
+footer{font-size:.72rem;opacity:.6;text-align:center;padding:4px 10px 10px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Altar de Muertos para Selena</h1>
+  <p>Toca cada elemento para conocer su significado</p>
+</header>
+<div id="stage"><img class="base" src="altar.jpg" alt="Altar de siete niveles"></div>
+<p id="hint"></p>
+<footer>Fuentes: INPI, UNAM, SEP (aprende.gob.mx), Smithsonian Folklife, Tecnológico de Monterrey. Los altares varían según la región y la familia.</footer>
+<div id="modal" role="dialog" aria-modal="true" aria-labelledby="mt">
+  <div class="card"><button id="x" aria-label="Cerrar">✕</button>
+    <img id="mi" alt=""><h2 id="mt"></h2><p class="nv" id="mn"></p><p class="d" id="md"></p><small id="ms"></small></div>
+</div>
+<div id="cortina"></div>
+
+<script>
+/* ===== CONFIGURACIÓN =====
+   x,y = punto de apoyo (centro-abajo) del elemento en % del altar. w = ancho en %.
+   Ajusta posiciones con:  index.html?edit  (arrastra y copia los números de la consola) */
+const ITEMS=[
+{id:"arco",img:"arco.jpg",x:50,y:30,w:62,nv:"Cúspide del altar",t:"El arco",
+ d:"Se coloca en lo más alto del altar y simboliza la entrada al mundo de los muertos, el umbral que las ánimas cruzan para visitar a sus familias. Suele adornarse con flor de cempasúchil y otros elementos naturales.",s:"Tradición popular; varía por región"},
+{id:"crucifijo",img:"crucifijo.jpg",x:50,y:24,w:10,nv:"Nivel 7 · La cruz",t:"El crucifijo",
+ d:"La cruz se incorporó a la ofrenda después de la evangelización y se coloca en la parte superior. Puede formarse también con sal, ceniza o pétalos de cempasúchil; en el último caso simboliza purificación y la expiación de culpas pendientes.",s:"Fuente: tradición recopilada por Ecoosfera y medios que citan al INPI"},
+{id:"selena",img:"selena.jpg",x:50,y:36,w:18,nv:"Nivel 6 · Fotografías",t:"Selena Quintanilla",
+ d:"Selena Quintanilla-Pérez (Lake Jackson, Texas, 16 de abril de 1971 – Corpus Christi, 31 de marzo de 1995) fue cantante, compositora y empresaria, conocida como la «Reina de la música tejana». Ganó un Grammy por «Selena Live!» (1994) y su legado sigue vivo con millones de fans en México y Estados Unidos. En el altar, el retrato indica a quién está dedicada la ofrenda.",s:"Retrato: SEP (aprende.gob.mx). Datos biográficos: verificar en Handbook of Texas / Biblioteca del Congreso"},
+{id:"calavera",img:"calavera.jpg",x:30,y:36,w:9,nv:"Nivel 5 · Dulces y calaveritas",t:"Calaverita de azúcar",
+ d:"Las calaveritas de azúcar representan el afecto hacia el difunto y la forma mesoamericana de entender la muerte como parte de la vida. Muchas llevan el nombre de la persona recordada.",s:"Fuente: SEP (aprende.gob.mx)"},
+{id:"dulces",img:"dulces.jpg",x:70,y:36,w:12,nv:"Nivel 5 · Dulces y calaveritas",t:"Dulces y golosinas",
+ d:"Se ofrecen los dulces y platillos que al difunto le gustaban en vida. Es una forma de compartir con él y de recordarlo con cariño; en los niños, los juguetes y dulces son parte esencial.",s:"Fuente: INPI / UNAM"},
+{id:"pan",img:"pan.jpg",x:32,y:47,w:15,nv:"Nivel 4 · Pan y fruta",t:"Pan de muerto",
+ d:"El INPI lo describe como un ofrecimiento fraternal. Su forma redonda con «huesitos» se asocia con el ciclo de la vida y la muerte, y en la tradición católica se vincula con el cuerpo de Cristo.",s:"Fuente: INPI"},
+{id:"fruta",img:"fruta.jpg",x:68,y:47,w:15,nv:"Nivel 4 · Pan y fruta",t:"La fruta",
+ d:"Compartir con los difuntos la fruta, el pan y los platillos de temporada es el corazón de la ofrenda. Representa los frutos de la tierra y el cariño de quienes los reciben.",s:"Fuente: INPI / UNAM"},
+{id:"sal",img:"sal.jpg",x:35,y:58,w:11,nv:"Nivel 3 · Purificación",t:"La sal",
+ d:"Es un elemento de purificación: ayuda a que el cuerpo no se corrompa durante el viaje de ida y vuelta de las ánimas, y aleja a los malos espíritus.",s:"Fuente: INPI / UNAM"},
+{id:"agua",img:"agua.jpg",x:65,y:58,w:11,nv:"Nivel 3 · Purificación",t:"El agua",
+ d:"Se coloca un vaso con agua para mitigar la sed de las ánimas después de su largo recorrido. También simboliza la pureza y la fuente de la vida.",s:"Fuente: INPI / SEP"},
+{id:"copal",img:"copal.jpg",x:33,y:69,w:12,nv:"Nivel 2 · Sahumerio",t:"El copal",
+ d:"Es una resina de origen prehispánico que se quema como sahumerio. Su humo limpia el lugar y aleja a los malos espíritus; es uno de los elementos indígenas de la ofrenda.",s:"Fuente: INPI / UNAM"},
+{id:"incienso",img:"incienso.jpg",x:67,y:69,w:11,nv:"Nivel 2 · Sahumerio",t:"El incienso",
+ d:"Junto con el copal, su aroma purifica el espacio y guía a las ánimas hacia el altar. Representa la elevación de las oraciones.",s:"Fuente: INPI / SEP"},
+{id:"flores",img:"flores.jpg",x:50,y:82,w:30,nv:"Nivel 1 · Camino de flores",t:"Flores de cempasúchil",
+ d:"Su nombre viene del náhuatl «cempohualxóchitl», «veinte flores». Su color intenso y su aroma guían a las ánimas de regreso al altar, y se forman caminos de pétalos desde la entrada hasta la ofrenda.",s:"Fuente: INPI / UNAM / Smithsonian Folklife"}
+];
+/* velas decorativas (gif) repartidas por el altar */
+const VELAS=[[18,36,7],[82,36,7],[20,47,7],[80,47,7],[22,58,7],[78,58,7],[20,69,7],[80,69,7],[38,82,6],[62,82,6]];
+const stage=document.getElementById("stage");
+VELAS.forEach(([x,y,w])=>{const v=document.createElement("div");v.className="vela";v.style.cssText=`left:${x}%;top:${y}%;width:${w}%`;v.innerHTML='<img src="vela.gif" alt="">';stage.appendChild(v)});
+ITEMS.forEach(o=>{const b=document.createElement("button");b.className="it";b.id="it-"+o.id;b.setAttribute("aria-label",o.t);
+ b.style.cssText=`left:${o.x}%;top:${o.y}%;width:${o.w}%`;b.innerHTML=`<img src="${o.img}" alt="${o.t}">`;
+ b.onclick=()=>{if(!EDIT)abrir(o)};stage.appendChild(b)});
+
+/* ===== cortina de pétalos ===== */
+const C=document.getElementById("cortina"),M=document.getElementById("modal");
+const esperar=ms=>new Promise(r=>setTimeout(r,ms));
+let ocupado=false;
+async function cortina(entre){ // baja, ejecuta cambio, sube
+  C.className="reset";void C.offsetWidth;C.className="";void C.offsetWidth;
+  C.classList.add("baja");await esperar(850);
+  entre();await esperar(150);
+  C.classList.add("sube");await esperar(850);
+  C.className="reset";
+}
+async function abrir(o){
+  if(ocupado)return;ocupado=true;
+  await cortina(()=>{
+    mi.src=o.img;mi.alt=o.t;mt.textContent=o.t;mn.textContent=o.nv;md.textContent=o.d;ms.textContent=o.s;
+    M.classList.add("on");x.focus();
+  });ocupado=false;
+}
+async function cerrar(){
+  if(ocupado||!M.classList.contains("on"))return;ocupado=true;
+  await cortina(()=>M.classList.remove("on"));ocupado=false;
+}
+const [mi,mt,mn,md,ms,x]=["mi","mt","mn","md","ms","x"].map(i=>document.getElementById(i));
+x.onclick=cerrar;
+document.addEventListener("keydown",e=>{if(e.key==="Escape")cerrar()});
+
+/* ===== modo edición: index.html?edit ===== */
+const EDIT=location.search.includes("edit");
+if(EDIT){
+  document.getElementById("hint").textContent="MODO EDICIÓN: arrastra los elementos; las coordenadas salen en la consola (F12).";
+  document.querySelectorAll(".it").forEach(b=>{
+    b.style.touchAction="none";
+    b.onpointerdown=e=>{b.setPointerCapture(e.pointerId);
+      b.onpointermove=ev=>{const r=stage.getBoundingClientRect();
+        b.style.left=((ev.clientX-r.left)/r.width*100).toFixed(1)+"%";
+        b.style.top=((ev.clientY-r.top)/r.height*100+ (b.offsetHeight/2)/r.height*100).toFixed(1)+"%"};
+      b.onpointerup=()=>{b.onpointermove=null;console.log(b.id.slice(3),"x:",parseFloat(b.style.left),"y:",parseFloat(b.style.top),"w:",parseFloat(b.style.width))}};
+  });
+}
+</script>
+</body>
+</html>
