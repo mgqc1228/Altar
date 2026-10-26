@@ -4,57 +4,84 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Altar de Muertos · Selena Quintanilla</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
 <style>
-:root{--or:#ff9d1a;--mo:#6a1b6e;--noche:#12061a;--crema:#fff1d6}
+:root{--or:#ff9d1a;--oro:#f0c14b;--noche:#12061a;--crema:#fff1d6}
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;background:radial-gradient(ellipse at 50% 30%,#3b1250,var(--noche) 70%);color:var(--crema);font-family:Georgia,"Times New Roman",serif}
-body{display:flex;flex-direction:column;align-items:center;overflow-x:hidden}
-header{text-align:center;padding:10px 12px 0}
-h1{margin:0;font-size:clamp(1.1rem,3.6vw,2rem);color:var(--or);letter-spacing:.04em}
-header p{margin:2px 0 0;font-size:clamp(.75rem,2.2vw,1rem);opacity:.85}
-#stage{position:relative;width:min(96vw,calc((100dvh - 90px) * .8));aspect-ratio:4/5;margin:6px auto;isolation:isolate;overflow:hidden;border-radius:14px;background:radial-gradient(circle at 50% 35%,#fffaf0,#f1e2c4);box-shadow:0 0 60px rgba(230,126,34,.25),0 20px 40px rgba(0,0,0,.6)}
+html,body{margin:0;min-height:100%}
+body{background:radial-gradient(ellipse at 50% 0%,#4a1763 0%,#22092f 45%,#0d0412 100%) fixed;color:var(--crema);font-family:"Playfair Display",Georgia,serif;overflow-x:hidden}
+/* papel picado */
+.picado{display:flex;position:relative;z-index:6;padding-top:8px}
+.picado::before{content:"";position:absolute;left:0;right:0;top:8px;height:2px;background:#d4a574}
+.flag{flex:1;height:46px;margin-top:2px;background:var(--c);transform-origin:50% 0;animation:sway 3.4s ease-in-out infinite alternate;
+ clip-path:polygon(0 0,100% 0,100% 82%,90% 100%,80% 82%,70% 100%,60% 82%,50% 100%,40% 82%,30% 100%,20% 82%,10% 100%,0 82%);
+ -webkit-mask:radial-gradient(circle at 50% 40%,transparent 6px,#000 7px);mask:radial-gradient(circle at 50% 40%,transparent 6px,#000 7px);opacity:.92}
+@keyframes sway{from{transform:rotate(-3deg)}to{transform:rotate(3deg)}}
+header{position:relative;z-index:5;text-align:center;padding:14px 12px 4px}
+h1{margin:0;font-family:"Cinzel Decorative",Georgia,serif;font-size:clamp(1.6rem,6vw,3.2rem);letter-spacing:.06em;
+ background:linear-gradient(#ffe08a,#f0a020);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 8px rgba(255,157,26,.45))}
+header p{margin:4px 0 0;font-style:italic;color:#e7c9a0;font-size:clamp(.85rem,2.6vw,1.1rem)}
+#hint{position:relative;z-index:5;text-align:center;font-size:.85rem;color:#d4a574;margin:6px 0 2px}
+/* altar */
+#stage{position:relative;z-index:5;width:min(94vw,calc((100dvh - 150px) * .8),680px);aspect-ratio:4/5;margin:6px auto 0;isolation:isolate;overflow:hidden;border-radius:18px;
+ background:radial-gradient(circle at 50% 30%,#fffaf0,#f1e2c4);border:2px solid rgba(240,193,75,.6);box-shadow:0 0 70px rgba(255,140,0,.28),0 24px 50px rgba(0,0,0,.65)}
 #stage>img.base{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}
+.vela{position:absolute;transform:translate(-50%,-100%);pointer-events:none}
+.vela img{width:100%;display:block}
+.vela::before{content:"";position:absolute;left:50%;top:12%;width:420%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:-1;
+ background:radial-gradient(circle,rgba(255,170,40,.5),rgba(255,170,40,0) 62%);animation:flick 2.2s ease-in-out infinite alternate;animation-delay:var(--d,0s)}
+@keyframes flick{from{opacity:1}to{opacity:.55}}
 .it{position:absolute;background:none;border:0;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .it img{display:block;width:100%;height:auto;mix-blend-mode:multiply;transform-origin:50% 100%;transition:transform .25s}
 .it:hover img,.it:focus-visible img{transform:scale(1.18)}
 .it:focus-visible{outline:2px solid var(--or);outline-offset:2px;border-radius:8px}
-.vela{position:absolute;transform:translate(-50%,-100%);pointer-events:none;mix-blend-mode:normal}
-.vela img{width:100%;display:block}
-#hint{font-size:.8rem;opacity:.7;margin:0 0 8px;text-align:center}
+.it::after{content:"";position:absolute;inset:-4px;border-radius:14%;border:2px solid rgba(214,150,20,.9);pointer-events:none;opacity:0;animation:pulse 2.6s ease-out 3}
+@keyframes pulse{0%{transform:scale(.95);opacity:.8}70%,100%{transform:scale(1.3);opacity:0}}
+.it.seen::before{content:"✦";position:absolute;right:-2px;top:-2px;color:#c58a00;font-size:.95rem;z-index:5;text-shadow:0 0 4px #fff}
+.tip{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);white-space:nowrap;background:rgba(18,6,26,.93);color:var(--oro);border:1px solid rgba(240,193,75,.55);font:600 .74rem Georgia,serif;padding:3px 9px;border-radius:9px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
+.it:hover .tip,.it:focus-visible .tip{opacity:1}
+footer{position:relative;z-index:5;text-align:center;padding:14px 14px calc(18px + env(safe-area-inset-bottom));font-size:.78rem;color:#a98866}
+/* partículas */
+.mp{position:fixed;bottom:-24px;width:9px;height:12px;border-radius:50% 0 50% 50%;background:var(--or);opacity:0;pointer-events:none;z-index:1;animation:rise linear infinite}
+@keyframes rise{0%{transform:translateY(0) rotate(0);opacity:0}10%{opacity:.5}100%{transform:translateY(-110vh) translateX(var(--dx)) rotate(540deg);opacity:0}}
+/* ventana */
+#modal{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(10,3,16,.9)}
+#modal.on{display:flex}
+.card{position:relative;max-width:580px;width:100%;max-height:92dvh;overflow:auto;text-align:center;padding:22px 20px 20px;border-radius:20px;
+ background:linear-gradient(160deg,#321046,#170722);border:2px solid var(--oro);box-shadow:0 0 0 6px rgba(240,193,75,.12),0 0 60px rgba(255,157,26,.35);animation:pop .45s cubic-bezier(.2,1.2,.4,1)}
+@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:none;opacity:1}}
+.iw{isolation:isolate;display:inline-block;max-width:100%;padding:12px;border-radius:16px;background:radial-gradient(circle at 50% 40%,#fffaf0,#eadcc0);box-shadow:0 0 30px rgba(255,157,26,.4)}
+.iw img{display:block;width:auto;max-width:100%;max-height:32dvh;mix-blend-mode:multiply}
+.badge{display:inline-block;margin:12px 0 2px;padding:3px 12px;border-radius:99px;background:rgba(240,193,75,.15);border:1px solid rgba(240,193,75,.5);color:var(--oro);font-size:.78rem;letter-spacing:.04em}
+.card h2{margin:6px 0 8px;font-family:"Cinzel Decorative",Georgia,serif;color:var(--or);font-size:clamp(1.3rem,5vw,1.9rem)}
+.card p.d{text-align:left;line-height:1.6;font-size:clamp(.95rem,3.4vw,1.06rem);margin:0 0 12px}
+.card small{display:block;text-align:left;color:#b99a78;font-size:.78rem;border-top:1px solid rgba(240,193,75,.25);padding-top:8px}
+#x{position:absolute;top:8px;right:10px;width:44px;height:44px;border-radius:50%;border:2px solid var(--oro);background:#12061a;color:var(--oro);font-size:1.3rem;cursor:pointer;z-index:2}
 /* pétalos que cubren la pantalla */
 .petals-container{position:fixed;inset:0;z-index:2000;overflow:hidden;display:none}
 .petals-container.active{display:block}
-.veil{position:absolute;inset:0;opacity:0;background:radial-gradient(circle at 50% 50%,rgba(230,126,34,.55),rgba(90,25,5,.85));animation:veil 3.6s ease-in-out forwards}
-@keyframes veil{0%{opacity:0}32%{opacity:1}60%{opacity:1}100%{opacity:0}}
+.veil{position:absolute;inset:0;opacity:0;background:radial-gradient(circle at 50% 50%,#e67e22 0%,#9a3a08 55%,#3b0f02 100%);animation:veil 3.6s ease-in-out forwards}
+@keyframes veil{0%{opacity:0}30%{opacity:1}62%{opacity:1}100%{opacity:0}}
 .petal{position:absolute;opacity:0;width:var(--sz);height:var(--h);animation:sweep 3.4s ease-in-out forwards;will-change:transform,opacity}
 .petal.photo{background:var(--petal) center/contain no-repeat}
 .petal.css{border-radius:50% 0 50% 50%/60% 0 60% 60%;background:radial-gradient(ellipse at 30% 25%,#ffd36b 0%,var(--c) 55%,#a63d00 100%);box-shadow:inset -3px -4px 8px rgba(120,40,0,.35)}
 @keyframes sweep{0%{opacity:0;transform:translate(var(--dx),-45vh) rotate(0deg) scale(.4)}30%{opacity:1;transform:translate(0,0) rotate(var(--r1)) scale(1)}62%{opacity:1;transform:translate(var(--sway),2vh) rotate(var(--r2)) scale(1.05)}100%{opacity:.9;transform:translate(var(--sway2),140vh) rotate(var(--r3)) scale(.9)}}
-/* ventana */
-#modal{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(18,6,26,.88)}
-#modal.on{display:flex}
-.card{position:relative;max-width:560px;width:100%;max-height:92dvh;overflow:auto;background:linear-gradient(#2a0d3a,#1a0828);border:3px solid var(--or);border-radius:16px;padding:20px 18px 18px;text-align:center;box-shadow:0 0 40px rgba(255,157,26,.35)}
-.iw{isolation:isolate;display:inline-block;max-width:100%;padding:10px;border-radius:14px;background:radial-gradient(circle at 50% 40%,#fffaf0,#eadcc0)}
-.iw img{display:block;width:auto;max-width:100%;max-height:34dvh;mix-blend-mode:multiply}
-.card h2{margin:8px 0 2px;color:var(--or);font-size:clamp(1.3rem,5vw,1.8rem)}
-.card .nv{font-size:.85rem;opacity:.7;margin:0 0 10px}
-.card p.d{text-align:left;line-height:1.55;font-size:clamp(.95rem,3.4vw,1.05rem);margin:0 0 10px}
-.card small{display:block;opacity:.65;font-size:.78rem;text-align:left}
-#x{position:absolute;top:8px;right:10px;width:44px;height:44px;border-radius:50%;border:2px solid var(--or);background:#12061a;color:var(--or);font-size:1.4rem;cursor:pointer}
-footer{font-size:.72rem;opacity:.6;text-align:center;padding:4px 10px 10px}
+@media (prefers-reduced-motion:reduce){.flag,.vela::before,.mp,.it::after{animation:none}}
 </style>
 </head>
 <body>
+<div class="picado" id="picado"></div>
 <header>
-  <h1>Altar de Muertos para Selena</h1>
-  <p>Toca cada elemento para conocer su significado</p>
+  <h1>Altar de Muertos</h1>
+  <p>✦ En memoria de Selena Quintanilla · 1971 – 1995 ✦</p>
 </header>
-<div id="stage"></div>
 <p id="hint"></p>
+<div id="stage"></div>
 <footer>Fuentes: INPI, UNAM, SEP (aprende.gob.mx), Smithsonian Folklife, Tecnológico de Monterrey. Los altares varían según la región y la familia.</footer>
 <div id="modal" role="dialog" aria-modal="true" aria-labelledby="mt">
   <div class="card"><button id="x" aria-label="Cerrar">✕</button>
-    <div class="iw"><img id="mi" alt=""></div><h2 id="mt"></h2><p class="nv" id="mn"></p><p class="d" id="md"></p><small id="ms"></small></div>
+    <div class="iw"><img id="mi" alt=""></div><div><span class="badge" id="mn"></span></div><h2 id="mt"></h2><p class="d" id="md"></p><small id="ms"></small></div>
 </div>
 <div class="petals-container" id="petalsContainer"></div>
 
@@ -67,38 +94,79 @@ const ITEMS=[
  d:"Se coloca en lo más alto del altar y simboliza la entrada al mundo de los muertos, el umbral que las ánimas cruzan para visitar a sus familias. Suele adornarse con flor de cempasúchil y otros elementos naturales.",s:"Tradición popular; varía por región"},
 {id:"crucifijo",img:"crucifijo.jpg",x:50,y:24,w:10,nv:"Nivel 7 · La cruz",t:"El crucifijo",
  d:"La cruz se incorporó a la ofrenda después de la evangelización y se coloca en la parte superior. Puede formarse también con sal, ceniza o pétalos de cempasúchil; en el último caso simboliza purificación y la expiación de culpas pendientes.",s:"Fuente: tradición recopilada por Ecoosfera y medios que citan al INPI"},
-{id:"selena",img:"selena.jpg",x:50,y:36,w:18,nv:"Nivel 6 · Fotografías",t:"Selena Quintanilla",
+{id:"selena",img:"selena.jpg",x:50,y:36,w:20,nv:"Nivel 6 · Fotografías",t:"Selena Quintanilla",
  d:"Selena Quintanilla-Pérez (Lake Jackson, Texas, 16 de abril de 1971 – Corpus Christi, 31 de marzo de 1995) fue cantante, compositora y empresaria, conocida como la «Reina de la música tejana». Ganó un Grammy por «Selena Live!» (1994) y su legado sigue vivo con millones de fans en México y Estados Unidos. En el altar, el retrato indica a quién está dedicada la ofrenda.",s:"Retrato: SEP (aprende.gob.mx). Datos biográficos: verificar en Handbook of Texas / Biblioteca del Congreso"},
-{id:"calavera",img:"calavera.jpg",x:30,y:36,w:9,nv:"Nivel 5 · Dulces y calaveritas",t:"Calaverita de azúcar",
+{id:"calavera",img:"calavera.jpg",x:46,y:47,w:9,nv:"Nivel 4 · Dulces, pan y fruta",t:"Calaverita de azúcar",
  d:"Las calaveritas de azúcar representan el afecto hacia el difunto y la forma mesoamericana de entender la muerte como parte de la vida. Muchas llevan el nombre de la persona recordada.",s:"Fuente: SEP (aprende.gob.mx)"},
-{id:"dulces",img:"dulces.jpg",x:70,y:36,w:12,nv:"Nivel 5 · Dulces y calaveritas",t:"Dulces y golosinas",
+{id:"dulces",img:"dulces.jpg",x:57,y:47,w:10,nv:"Nivel 4 · Dulces, pan y fruta",t:"Dulces y golosinas",
  d:"Se ofrecen los dulces y platillos que al difunto le gustaban en vida. Es una forma de compartir con él y de recordarlo con cariño; en los niños, los juguetes y dulces son parte esencial.",s:"Fuente: INPI / UNAM"},
-{id:"pan",img:"pan.jpg",x:32,y:47,w:15,nv:"Nivel 4 · Pan y fruta",t:"Pan de muerto",
+{id:"pan",img:"pan.jpg",x:31,y:47,w:15,nv:"Nivel 4 · Dulces, pan y fruta",t:"Pan de muerto",
  d:"El INPI lo describe como un ofrecimiento fraternal. Su forma redonda con «huesitos» se asocia con el ciclo de la vida y la muerte, y en la tradición católica se vincula con el cuerpo de Cristo.",s:"Fuente: INPI"},
-{id:"fruta",img:"fruta.jpg",x:68,y:47,w:15,nv:"Nivel 4 · Pan y fruta",t:"La fruta",
+{id:"fruta",img:"fruta.jpg",x:70,y:47,w:15,nv:"Nivel 4 · Dulces, pan y fruta",t:"La fruta",
  d:"Compartir con los difuntos la fruta, el pan y los platillos de temporada es el corazón de la ofrenda. Representa los frutos de la tierra y el cariño de quienes los reciben.",s:"Fuente: INPI / UNAM"},
-{id:"sal",img:"sal.jpg",x:35,y:58,w:11,nv:"Nivel 3 · Purificación",t:"La sal",
+{id:"sal",img:"sal.jpg",x:31,y:58,w:11,nv:"Nivel 3 · Purificación",t:"La sal",
  d:"Es un elemento de purificación: ayuda a que el cuerpo no se corrompa durante el viaje de ida y vuelta de las ánimas, y aleja a los malos espíritus.",s:"Fuente: INPI / UNAM"},
-{id:"agua",img:"agua.jpg",x:65,y:58,w:11,nv:"Nivel 3 · Purificación",t:"El agua",
+{id:"agua",img:"agua.jpg",x:69,y:58,w:10,nv:"Nivel 3 · Purificación",t:"El agua",
  d:"Se coloca un vaso con agua para mitigar la sed de las ánimas después de su largo recorrido. También simboliza la pureza y la fuente de la vida.",s:"Fuente: INPI / SEP"},
-{id:"copal",img:"copal.jpg",x:33,y:69,w:12,nv:"Nivel 2 · Sahumerio",t:"El copal",
+{id:"copal",img:"copal.jpg",x:28,y:69,w:11,nv:"Nivel 2 · Sahumerio",t:"El copal",
  d:"Es una resina de origen prehispánico que se quema como sahumerio. Su humo limpia el lugar y aleja a los malos espíritus; es uno de los elementos indígenas de la ofrenda.",s:"Fuente: INPI / UNAM"},
-{id:"incienso",img:"incienso.jpg",x:67,y:69,w:11,nv:"Nivel 2 · Sahumerio",t:"El incienso",
+{id:"incienso",img:"incienso.jpg",x:72,y:69,w:11,nv:"Nivel 2 · Sahumerio",t:"El incienso",
  d:"Junto con el copal, su aroma purifica el espacio y guía a las ánimas hacia el altar. Representa la elevación de las oraciones.",s:"Fuente: INPI / SEP"},
-{id:"flores",img:"flores.jpg",x:50,y:90,w:18,nv:"Nivel 1 · Camino de flores",t:"Flores de cempasúchil",
- d:"Su nombre viene del náhuatl «cempohualxóchitl», «veinte flores». Su color intenso y su aroma guían a las ánimas de regreso al altar, y se forman caminos de pétalos desde la entrada hasta la ofrenda.",s:"Fuente: INPI / UNAM / Smithsonian Folklife"}
+{id:"flores",img:"flores.jpg",x:50,y:91,w:20,nv:"Nivel 1 · Camino de flores",t:"Flores de cempasúchil",
+ d:"Su nombre viene del náhuatl «cempohualxóchitl», «veinte flores». Su color intenso y su aroma guían a las ánimas de regreso al altar, y se forman caminos de pétalos desde la entrada hasta la ofrenda.",s:"Fuente: INPI / UNAM / Smithsonian Folklife"},
+{id:"papelpicado",img:"papelpicado.jpg",x:50,y:15,w:78,nv:"Decoración · Sobre el altar",t:"Papel picado",
+ d:"Da color y alegría a la ofrenda y, en la tradición, representa el elemento aire. Junto con el agua, la tierra (flores y frutos) y el fuego de las velas, reúne los cuatro elementos en el altar. Sus figuras recortadas, a menudo calaveras y flores, se mueven con el viento como una invitación a las ánimas.",s:"Fuente: SEP (aprende.gob.mx) y tradición popular"},
+{id:"tamales",img:"tamales.jpg",x:43,y:58,w:13,nv:"Nivel 3 · Comida y agua",t:"Tamales",
+ d:"La comida es uno de los elementos indígenas de la ofrenda. Los tamales, hechos de maíz —alimento fundamental de Mesoamérica—, se ofrecen calientes para que las ánimas disfruten su aroma. Se comparten después con la familia, como un banquete entre vivos y muertos.",s:"Fuente: INPI / UNAM"},
+{id:"mole",img:"mole.jpg",x:57,y:58,w:13,nv:"Nivel 3 · Comida y agua",t:"Mole y platillos favoritos",
+ d:"Se colocan los guisos que el difunto disfrutaba en vida, como mole, pollo o arroz. Servir su platillo preferido es una forma de decirle que se le espera y se le recuerda con cariño.",s:"Fuente: INPI (vía UnoTV)"},
+{id:"atole",img:"atole.jpg",x:40,y:69,w:10,nv:"Nivel 2 · Bebidas y sahumerio",t:"Atole y chocolate",
+ d:"Las bebidas calientes de maíz y cacao, como el atole o el champurrado, son parte de la comida ofrecida a las ánimas. Acompañan al pan de muerto y reconfortan a quienes llegan de un largo viaje.",s:"Fuente: INPI / tradición popular"},
+{id:"tequila",img:"tequila.jpg",x:59,y:69,w:8,nv:"Nivel 2 · Bebidas y sahumerio",t:"La botella de tequila",
+ d:"Según el INPI, a los adultos se les ofrece también su bebida favorita. La botella de tequila, mezcal o el licor que le gustaba a la persona recordada acompaña a la ofrenda como un brindis simbólico entre quienes están y quienes se fueron.",s:"Fuente: INPI"},
+{id:"vasot",img:"vasot.jpg",x:50,y:69,w:7,nv:"Nivel 2 · Bebidas y sahumerio",t:"Tequila con limón",
+ d:"El vasito servido, con su limón al lado, invita a las ánimas a brindar: la bebida se ofrece lista para disfrutarse, como se le serviría a la persona en vida. Su aroma, igual que el del copal y el de la comida, forma parte de lo que atrae a las ánimas.",s:"Fuente: INPI / tradición popular"},
+{id:"xolo",img:"xolo.jpg",x:17,y:91,w:15,nv:"Nivel 1 · Al pie del altar",t:"Xoloitzcuintle, el perro guía",
+ d:"En la tradición mexica, el perro xoloitzcuintle acompañaba al difunto en su viaje por el Mictlán y lo ayudaba a cruzar el río del inframundo. Por eso muchas familias colocan una figura de perrito en la ofrenda.",s:"Tradición mexica (verificar con INAH / UNAM)"},
+{id:"rosas",img:"rosas.jpg",x:34,y:90,w:14,nv:"Nivel 1 · Recuerdos de Selena",t:"Rosas rojas",
+ d:"Las rosas rojas son una de las ofrendas más frecuentes que sus seguidores le dejan a Selena en su memorial de Corpus Christi, Texas. Aquí acompañan al cempasúchil como símbolo de amor y de cariño duradero hacia ella.",s:"Dato general sobre homenajes a Selena; verificar en prensa de Corpus Christi"},
+{id:"disco",img:"disco.jpg",x:64,y:90,w:11,nv:"Nivel 1 · Recuerdos de Selena",t:"Su música",
+ d:"La ofrenda incluye fotografías y objetos personales del difunto. Para Selena, nada la representa mejor que su música: «Amor Prohibido» (1994), con éxitos como «Bidi Bidi Bom Bom» y «No Me Queda Más», y «Selena Live!», con el que ganó un Grammy.",s:"Objetos personales: INPI. Discografía: verificar en Billboard / Recording Academy"},
+{id:"microfono",img:"microfono.jpg",x:86,y:90,w:8,nv:"Nivel 1 · Recuerdos de Selena",t:"Su micrófono",
+ d:"Los objetos que el difunto usaba en vida ayudan a reconocerlo cuando visita la ofrenda. El micrófono recuerda a la «Reina de la música tejana» sobre el escenario; su último concierto fue en el Astrodomo de Houston, el 26 de febrero de 1995.",s:"Objetos personales: INPI / UnoTV. Concierto: verificar en Handbook of Texas"},
+{id:"casete",img:"casete.jpg",x:75,y:90,w:9,nv:"Nivel 1 · Recuerdos de Selena",t:"Su casete",
+ d:"Los casetes fueron uno de los formatos con los que la música tejana llegó a miles de hogares en los años ochenta y noventa, la época en la que Selena creció como artista. Es un objeto de su tiempo que, como en toda ofrenda, ayuda a recordar lo que la persona amaba.",s:"Objetos personales: INPI. Contexto histórico: verificar en Handbook of Texas"}
 ];
 /* velas decorativas (gif) repartidas por el altar */
-const VELAS=[[18,36,7],[82,36,7],[20,47,7],[80,47,7],[22,58,7],[78,58,7],[20,69,7],[80,69,7],[38,82,6],[62,82,6]];
+const VELAS=[[18,36,7],[82,36,7],[20,47,7],[80,47,7],[22,58,7],[78,58,7],[20,69,7],[80,69,7]];
 /* Carpeta de las imágenes. Junto al index.html déjalo vacío ""; si estuvieran en una carpeta: "img/" */
 const IMG_DIR="";
-const stage=document.getElementById("stage"),M=document.getElementById("modal");
+const stage=document.getElementById("stage"),M=document.getElementById("modal"),hint=document.getElementById("hint");
+
+/* papel picado y pétalos flotantes de fondo */
+(function(){const c=["#ff7a00","#d6246e","#7b2cbf","#10b8a6","#ffd23f","#6ab04c"],n=Math.max(8,Math.ceil(innerWidth/72)),p=document.getElementById("picado");
+ for(let i=0;i<n;i++){const f=document.createElement("div");f.className="flag";f.style.cssText=`--c:${c[i%6]};animation-delay:${(i%5)*-.7}s`;p.appendChild(f)}
+ for(let i=0;i<20;i++){const e=document.createElement("div");e.className="mp";
+  e.style.cssText=`left:${Math.random()*100}vw;--dx:${(Math.random()-.5)*160}px;animation-duration:${9+Math.random()*10}s;animation-delay:${-Math.random()*14}s;opacity:0`;document.body.appendChild(e)}})();
+
+/* altar */
 const base=new Image();base.className="base";base.alt="Altar de siete niveles";base.src=IMG_DIR+"altar.jpg";stage.appendChild(base);
-VELAS.forEach(([x,y,w])=>{const v=document.createElement("div");v.className="vela";v.style.cssText=`left:${x}%;top:${y}%;width:${w}%`;v.innerHTML=`<img src="${IMG_DIR}vela.gif" alt="">`;stage.appendChild(v)});
+VELAS.forEach(([x,y,w],i)=>{const v=document.createElement("div");v.className="vela";v.style.cssText=`left:${x}%;top:${y}%;width:${w}%;--d:${-(i*.37%2).toFixed(2)}s`;v.innerHTML=`<img src="${IMG_DIR}vela.gif" alt="">`;stage.appendChild(v)});
 /* sin transform en el botón: así el "multiply" de la imagen se mezcla con el fondo y el blanco del JPG desaparece */
 ITEMS.forEach(o=>{const b=document.createElement("button");b.className="it";b.id="it-"+o.id;b.setAttribute("aria-label",o.t);
- b.style.cssText=`left:${o.x-o.w/2}%;bottom:${100-o.y}%;width:${o.w}%`;b.innerHTML=`<img src="${IMG_DIR+o.img}" alt="${o.t}">`;
+ b.style.cssText=`left:${o.x-o.w/2}%;bottom:${100-o.y}%;width:${o.w}%`;b.innerHTML=`<img src="${IMG_DIR+o.img}" alt="${o.t}" onerror="this.parentNode.remove()"><span class="tip">${o.t}</span>`;
  b.onclick=()=>{if(!EDIT)abrir(o)};stage.appendChild(b)});
+/* el arco va al frente del altar sin mezclarse: se le quita el blanco leyendo la imagen (en GitHub Pages funciona; si no, queda con multiply) */
+(function(){const im=new Image();im.onload=()=>{try{
+ const w=Math.min(im.naturalWidth,900),h=Math.round(im.naturalHeight*w/im.naturalWidth),c=document.createElement("canvas");c.width=w;c.height=h;
+ const g=c.getContext("2d");g.drawImage(im,0,0,w,h);const d=g.getImageData(0,0,w,h),p=d.data,seen=new Uint8Array(w*h),st=[];
+ const mn=i=>Math.min(p[i*4],p[i*4+1],p[i*4+2]),push=i=>{if(!seen[i]&&mn(i)>=232){seen[i]=1;st.push(i)}};
+ for(let x=0;x<w;x++){push(x);push((h-1)*w+x)}for(let y=0;y<h;y++){push(y*w);push(y*w+w-1)}
+ while(st.length){const i=st.pop(),x=i%w;if(x>0)push(i-1);if(x<w-1)push(i+1);if(i>=w)push(i-w);if(i<w*(h-1))push(i+w)}
+ for(let i=0;i<w*h;i++)if(seen[i])p[i*4+3]=0;
+ for(let i=0;i<w*h;i++){if(seen[i])continue;const x=i%w;if(((x>0&&seen[i-1])||(x<w-1&&seen[i+1])||(i>=w&&seen[i-w])||(i<w*(h-1)&&seen[i+w]))&&mn(i)>=205)p[i*4+3]=90}
+ g.putImageData(d,0,0);const t=document.querySelector("#it-arco img");t.src=c.toDataURL("image/png");t.style.mixBlendMode="normal"}catch(e){}};
+ im.src=IMG_DIR+"arco.jpg"})();
 
 /* ===== pétalo: se prepara una sola vez (quita el blanco de petalo.jpg) ===== */
 let busy=false,petalURL=null,petalRatio=.8;
@@ -114,32 +182,36 @@ let busy=false,petalURL=null,petalRatio=.8;
  o.getContext("2d").drawImage(c,x0,y0,bw,bh,0,0,bw,bh);petalURL=o.toDataURL("image/png");petalRatio=bw/bh}catch(e){petalURL=null}};
  im.src=IMG_DIR+"petalo.jpg"})();
 
-/* ===== cortina: 160 pétalos que caen, giran y cubren la pantalla ===== */
+/* ===== cortina: ~190 pétalos repartidos por toda la pantalla (cuadrícula con azar) que caen y giran ===== */
 const colores=["#f39c12","#e67e22","#ff9f1c","#d35400","#f5b041"],rand=(a,b)=>a+Math.random()*(b-a);
 function petalStorm(onCovered){
  if(matchMedia("(prefers-reduced-motion: reduce)").matches){onCovered();return}
  busy=true;const box=document.getElementById("petalsContainer"),vw=innerWidth,vh=innerHeight;
- const N=160,size=Math.min(140,Math.max(40,Math.sqrt(1.6*vw*vh/(N*.7))));
+ const cell=Math.sqrt(vw*vh/160),cols=Math.ceil(vw/cell)+1,rows=Math.ceil(vh/cell)+1,size=Math.max(80,cell*2.3);
  box.innerHTML='<div class="veil"></div>';box.classList.add("active");
  if(petalURL)box.style.setProperty("--petal",`url(${petalURL})`);
- for(let i=0;i<N;i++){const p=document.createElement("div"),sz=size*rand(.6,1.4);
+ let i=0;
+ for(let r=0;r<rows;r++)for(let c=0;c<cols;c++,i++){
+  const p=document.createElement("div"),sz=size*rand(.85,1.25),h=sz/(petalURL?petalRatio:.8),cx=(c-.2+rand(.1,.9))*cell,cy=(r-.2+rand(.1,.9))*cell;
   p.className="petal "+(petalURL?"photo":"css");
-  p.style.cssText=`left:${rand(-3,100)}vw;top:${rand(-3,100)}vh;--sz:${sz}px;--h:${sz/(petalURL?petalRatio:.8)}px;--c:${colores[i%5]};`+
-   `--dx:${rand(-15,15)}vw;--r1:${rand(-200,200)}deg;--r2:${rand(-300,300)}deg;--r3:${rand(-720,720)}deg;--sway:${rand(-6,6)}vw;--sway2:${rand(-20,20)}vw;animation-delay:${rand(0,.7)}s;`;
+  p.style.cssText=`left:${cx-sz/2}px;top:${cy-h/2}px;--sz:${sz}px;--h:${h}px;--c:${colores[i%5]};`+
+   `--dx:${rand(-15,15)}vw;--r1:${rand(-200,200)}deg;--r2:${rand(-300,300)}deg;--r3:${rand(-720,720)}deg;--sway:${rand(-4,4)}vw;--sway2:${rand(-20,20)}vw;animation-delay:${rand(0,.5)}s;`;
   box.appendChild(p)}
- setTimeout(onCovered,1500);
+ setTimeout(onCovered,1700);
  setTimeout(()=>{box.classList.remove("active");box.innerHTML="";busy=false},4300);
 }
-function abrir(o){if(busy)return;petalStorm(()=>{mi.src=IMG_DIR+o.img;mi.alt=o.t;mt.textContent=o.t;mn.textContent=o.nv;md.textContent=o.d;ms.textContent=o.s;M.classList.add("on");M.scrollTop=0;x.focus()})}
+const vistos=new Set(),actualizar=()=>{hint.textContent=`Toca cada elemento · descubiertos ${vistos.size} de ${document.querySelectorAll(".it").length}`};actualizar();
+function abrir(o){if(busy)return;petalStorm(()=>{mi.src=IMG_DIR+o.img;mi.alt=o.t;mt.textContent=o.t;mn.textContent=o.nv;md.textContent=o.d;ms.textContent=o.s;
+ vistos.add(o.id);document.getElementById("it-"+o.id).classList.add("seen");if(!EDIT)actualizar();M.classList.add("on");M.scrollTop=0;x.focus()})}
 function cerrar(){if(busy||!M.classList.contains("on"))return;petalStorm(()=>M.classList.remove("on"))}
 const [mi,mt,mn,md,ms,x]=["mi","mt","mn","md","ms","x"].map(i=>document.getElementById(i));
-x.onclick=cerrar;
+x.onclick=cerrar;M.addEventListener("click",e=>{if(e.target===M)cerrar()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")cerrar()});
 
 /* ===== modo edición: index.html?edit ===== */
 const EDIT=location.search.includes("edit");
 function setupEdit(){
- document.getElementById("hint").textContent="MODO EDICIÓN: arrastra los elementos; los números salen en la consola (F12).";
+ hint.textContent="MODO EDICIÓN: arrastra los elementos; los números salen en la consola (F12).";
  document.querySelectorAll(".it").forEach(b=>{b.style.touchAction="none";
   b.onpointerdown=e=>{e.preventDefault();b.setPointerCapture(e.pointerId);
    b.onpointermove=ev=>{const r=stage.getBoundingClientRect(),w=parseFloat(b.style.width);
