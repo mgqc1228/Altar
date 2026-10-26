@@ -27,14 +27,14 @@ header p{margin:4px 0 0;font-style:italic;color:#e7c9a0;font-size:clamp(.85rem,2
 #stage{position:relative;z-index:5;width:min(96vw,calc((100dvh - 100px) / 1.1),1000px);aspect-ratio:1/1.1;margin:6px auto 0;display:flex;align-items:center;justify-content:center;isolation:isolate;overflow:hidden;border-radius:18px;
  background:radial-gradient(circle at 50% 30%,#fffaf0,#f1e2c4);border:2px solid rgba(240,193,75,.6);box-shadow:0 0 70px rgba(255,140,0,.28),0 24px 50px rgba(0,0,0,.65)}
 #altar{position:relative;flex:none;width:72%;aspect-ratio:4/5}
-#altar>img.base{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}
+#altar>img.base{transition:opacity .3s;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}
 .vela{position:absolute;transform:translate(-50%,-100%);pointer-events:none}
 .vela img{width:100%;display:block}
 .vela::before{content:"";position:absolute;left:50%;top:12%;width:420%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:-1;
  background:radial-gradient(circle,rgba(255,170,40,.5),rgba(255,170,40,0) 62%);animation:flick 2.2s ease-in-out infinite alternate;animation-delay:var(--d,0s)}
 @keyframes flick{from{opacity:1}to{opacity:.55}}
 .it{position:absolute;background:none;border:0;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.it img{display:block;width:100%;height:auto;mix-blend-mode:multiply;transform-origin:50% 100%;transition:transform .25s}
+.it img{display:block;width:100%;height:auto;mix-blend-mode:multiply;transform-origin:50% 100%;transition:transform .25s,opacity .3s}
 .it:hover img,.it:focus-visible img{transform:scale(1.18)}
 .it:focus-visible{outline:2px solid var(--or);outline-offset:2px;border-radius:8px}
 .it::after{content:"";position:absolute;inset:-4px;border-radius:14%;border:2px solid rgba(214,150,20,.9);pointer-events:none;opacity:0;animation:pulse 2.6s ease-out 3}
@@ -71,6 +71,7 @@ footer{position:relative;z-index:5;text-align:center;padding:14px 14px calc(18px
 /* modo edición */
 body.edit{padding-bottom:200px}
 body.edit #stage{width:min(96vw,1100px)}
+.pend{opacity:0!important}
 .sel{outline:2px dashed #ff3d7f;outline-offset:2px}
 body.edit .vela::before{pointer-events:none}
 body.edit .vela{min-width:22px;min-height:44px;background:rgba(255,61,127,.18);outline:1px dashed rgba(255,61,127,.7)}
@@ -180,6 +181,22 @@ ITEMS.forEach(o=>{const b=document.createElement("button");b.className="it";b.id
  g.putImageData(d,0,0);const t=document.querySelector("#it-arco img");t.src=c.toDataURL("image/png");t.style.mixBlendMode="normal"}catch(e){}};
  im.src=IMG_DIR+"arco.jpg"})();
 
+/* Quita el blanco de cada imagen dejándola con transparencia real (en algunos celulares el "multiply" falla en ciertos elementos) */
+const CACHE={};
+function sinFondo(src,max){return new Promise(res=>{const im=new Image();im.onload=()=>{try{
+ const k=Math.min(1,max/Math.max(im.naturalWidth,im.naturalHeight)),w=Math.round(im.naturalWidth*k),h=Math.round(im.naturalHeight*k),c=document.createElement("canvas");c.width=w;c.height=h;
+ const g=c.getContext("2d");g.drawImage(im,0,0,w,h);const d=g.getImageData(0,0,w,h),p=d.data,seen=new Uint8Array(w*h),st=[];
+ const mn=i=>Math.min(p[i*4],p[i*4+1],p[i*4+2]),push=i=>{if(!seen[i]&&p[i*4+3]>0&&mn(i)>=232){seen[i]=1;st.push(i)}};
+ for(let x=0;x<w;x++){push(x);push((h-1)*w+x)}for(let y=0;y<h;y++){push(y*w);push(y*w+w-1)}
+ while(st.length){const i=st.pop(),x=i%w;if(x>0)push(i-1);if(x<w-1)push(i+1);if(i>=w)push(i-w);if(i<w*(h-1))push(i+w)}
+ for(let i=0;i<w*h;i++)if(seen[i])p[i*4+3]=0;
+ for(let i=0;i<w*h;i++){if(seen[i])continue;const x=i%w;if(((x>0&&seen[i-1])||(x<w-1&&seen[i+1])||(i>=w&&seen[i-w])||(i<w*(h-1)&&seen[i+w]))&&mn(i)>=205)p[i*4+3]=90}
+ g.putImageData(d,0,0);res(c.toDataURL("image/png"))}catch(e){res(null)}};im.onerror=()=>res(null);im.src=src})}
+function procesar(img,key,max){if(!img)return;img.classList.add("pend");const fin=()=>img.classList.remove("pend");setTimeout(fin,8000);
+ sinFondo(img.getAttribute("src"),max).then(u=>{if(u){CACHE[key]=u;img.onload=fin;img.src=u}else fin()})}
+procesar(base,"altar.jpg",1100);
+ITEMS.forEach(o=>{if(o.id!=="arco")procesar(document.querySelector("#it-"+o.id+" img"),o.img,800)});
+
 /* ===== pétalo: se prepara una sola vez (quita el blanco de petalo.jpg) ===== */
 let busy=false,petalURL=null,petalRatio=.8;
 (function(){const im=new Image();im.onload=()=>{try{
@@ -213,7 +230,7 @@ function petalStorm(onCovered){
  setTimeout(()=>{box.classList.remove("active");box.innerHTML="";busy=false},4300);
 }
 const vistos=new Set(),actualizar=()=>{hint.textContent=`Toca cada elemento · descubiertos ${vistos.size} de ${document.querySelectorAll(".it").length}`};actualizar();
-function abrir(o){if(busy)return;petalStorm(()=>{mi.src=IMG_DIR+o.img;mi.alt=o.t;mt.textContent=o.t;mn.textContent=o.nv;md.textContent=o.d;ms.textContent=o.s;
+function abrir(o){if(busy)return;petalStorm(()=>{mi.src=CACHE[o.img]||IMG_DIR+o.img;mi.alt=o.t;mt.textContent=o.t;mn.textContent=o.nv;md.textContent=o.d;ms.textContent=o.s;
  vistos.add(o.id);document.getElementById("it-"+o.id).classList.add("seen");if(!EDIT)actualizar();M.classList.add("on");M.scrollTop=0;x.focus()})}
 function cerrar(){if(busy||!M.classList.contains("on"))return;petalStorm(()=>M.classList.remove("on"))}
 const [mi,mt,mn,md,ms,x]=["mi","mt","mn","md","ms","x"].map(i=>document.getElementById(i));
