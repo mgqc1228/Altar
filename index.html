@@ -24,9 +24,10 @@ h1{margin:0;font-family:"Cinzel Decorative",Georgia,serif;font-size:clamp(1.6rem
 header p{margin:4px 0 0;font-style:italic;color:#e7c9a0;font-size:clamp(.85rem,2.6vw,1.1rem)}
 #hint{position:relative;z-index:5;text-align:center;font-size:.85rem;color:#d4a574;margin:6px 0 2px}
 /* altar */
-#stage{position:relative;z-index:5;width:min(94vw,calc((100dvh - 150px) * .8),680px);aspect-ratio:4/5;margin:6px auto 0;isolation:isolate;overflow:hidden;border-radius:18px;
+#stage{position:relative;z-index:5;width:min(96vw,calc((100dvh - 100px) / 1.1),1000px);aspect-ratio:1/1.1;margin:6px auto 0;display:flex;align-items:center;justify-content:center;isolation:isolate;overflow:hidden;border-radius:18px;
  background:radial-gradient(circle at 50% 30%,#fffaf0,#f1e2c4);border:2px solid rgba(240,193,75,.6);box-shadow:0 0 70px rgba(255,140,0,.28),0 24px 50px rgba(0,0,0,.65)}
-#stage>img.base{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}
+#altar{position:relative;flex:none;width:72%;aspect-ratio:4/5}
+#altar>img.base{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}
 .vela{position:absolute;transform:translate(-50%,-100%);pointer-events:none}
 .vela img{width:100%;display:block}
 .vela::before{content:"";position:absolute;left:50%;top:12%;width:420%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:-1;
@@ -67,6 +68,17 @@ footer{position:relative;z-index:5;text-align:center;padding:14px 14px calc(18px
 .petal.photo{background:var(--petal) center/contain no-repeat}
 .petal.css{border-radius:50% 0 50% 50%/60% 0 60% 60%;background:radial-gradient(ellipse at 30% 25%,#ffd36b 0%,var(--c) 55%,#a63d00 100%);box-shadow:inset -3px -4px 8px rgba(120,40,0,.35)}
 @keyframes sweep{0%{opacity:0;transform:translate(var(--dx),-45vh) rotate(0deg) scale(.4)}30%{opacity:1;transform:translate(0,0) rotate(var(--r1)) scale(1)}62%{opacity:1;transform:translate(var(--sway),2vh) rotate(var(--r2)) scale(1.05)}100%{opacity:.9;transform:translate(var(--sway2),140vh) rotate(var(--r3)) scale(.9)}}
+/* modo edición */
+body.edit{padding-bottom:200px}
+body.edit #stage{width:min(96vw,1100px)}
+.sel{outline:2px dashed #ff3d7f;outline-offset:2px}
+body.edit .vela::before{pointer-events:none}
+body.edit .vela{min-width:22px;min-height:44px;background:rgba(255,61,127,.18);outline:1px dashed rgba(255,61,127,.7)}
+body.edit img{-webkit-user-drag:none;user-select:none}
+.ep{position:fixed;left:8px;right:8px;bottom:8px;z-index:3000;max-width:560px;margin:0 auto;background:rgba(18,6,26,.96);border:1px solid var(--oro);border-radius:12px;padding:8px}
+.ep .eh{display:flex;justify-content:space-between;align-items:center;gap:6px;color:var(--oro);font-size:.9rem}
+.ep button{background:#2a0d3a;color:var(--oro);border:1px solid var(--oro);border-radius:8px;padding:6px 11px;font-size:1rem;cursor:pointer;margin-left:4px}
+.ep textarea{width:100%;height:120px;margin-top:6px;background:#0d0412;color:#f5dfb0;border:1px solid #5b3a6e;border-radius:8px;font:12px/1.4 monospace}
 @media (prefers-reduced-motion:reduce){.flag,.vela::before,.mp,.it::after{animation:none}}
 </style>
 </head>
@@ -77,7 +89,7 @@ footer{position:relative;z-index:5;text-align:center;padding:14px 14px calc(18px
   <p>✦ En memoria de Selena Quintanilla · 1971 – 1995 ✦</p>
 </header>
 <p id="hint"></p>
-<div id="stage"></div>
+<div id="stage"><div id="altar"></div></div>
 <footer>Fuentes: INPI, UNAM, SEP (aprende.gob.mx), Smithsonian Folklife, Tecnológico de Monterrey. Los altares varían según la región y la familia.</footer>
 <div id="modal" role="dialog" aria-modal="true" aria-labelledby="mt">
   <div class="card"><button id="x" aria-label="Cerrar">✕</button>
@@ -90,58 +102,58 @@ footer{position:relative;z-index:5;text-align:center;padding:14px 14px calc(18px
    x,y = punto de apoyo (centro-abajo) del elemento en % del altar. w = ancho en %.
    Ajusta posiciones con:  index.html?edit  (arrastra y copia los números de la consola) */
 const ITEMS=[
-{id:"arco",img:"arco.jpg",x:50,y:40,w:50,nv:"Cúspide del altar",t:"El arco",
- d:"Se coloca en lo más alto del altar y simboliza la entrada al mundo de los muertos, el umbral que las ánimas cruzan para visitar a sus familias. Suele adornarse con flor de cempasúchil y otros elementos naturales.",s:"Tradición popular; varía por región"},
-{id:"crucifijo",img:"crucifijo.jpg",x:50,y:24,w:10,nv:"Nivel 7 · La cruz",t:"El crucifijo",
- d:"La cruz se incorporó a la ofrenda después de la evangelización y se coloca en la parte superior. Puede formarse también con sal, ceniza o pétalos de cempasúchil; en el último caso simboliza purificación y la expiación de culpas pendientes.",s:"Fuente: tradición recopilada por Ecoosfera y medios que citan al INPI"},
-{id:"selena",img:"selena.jpg",x:50,y:36,w:20,nv:"Nivel 6 · Fotografías",t:"Selena Quintanilla",
- d:"Selena Quintanilla-Pérez (Lake Jackson, Texas, 16 de abril de 1971 – Corpus Christi, 31 de marzo de 1995) fue cantante, compositora y empresaria, conocida como la «Reina de la música tejana». Ganó un Grammy por «Selena Live!» (1994) y su legado sigue vivo con millones de fans en México y Estados Unidos. En el altar, el retrato indica a quién está dedicada la ofrenda.",s:"Retrato: SEP (aprende.gob.mx). Datos biográficos: verificar en Handbook of Texas / Biblioteca del Congreso"},
-{id:"calavera",img:"calavera.jpg",x:46,y:47,w:9,nv:"Nivel 4 · Dulces, pan y fruta",t:"Calaverita de azúcar",
- d:"Las calaveritas de azúcar representan el afecto hacia el difunto y la forma mesoamericana de entender la muerte como parte de la vida. Muchas llevan el nombre de la persona recordada.",s:"Fuente: SEP (aprende.gob.mx)"},
-{id:"dulces",img:"dulces.jpg",x:57,y:47,w:10,nv:"Nivel 4 · Dulces, pan y fruta",t:"Dulces y golosinas",
- d:"Se ofrecen los dulces y platillos que al difunto le gustaban en vida. Es una forma de compartir con él y de recordarlo con cariño; en los niños, los juguetes y dulces son parte esencial.",s:"Fuente: INPI / UNAM"},
-{id:"pan",img:"pan.jpg",x:31,y:47,w:15,nv:"Nivel 4 · Dulces, pan y fruta",t:"Pan de muerto",
- d:"El INPI lo describe como un ofrecimiento fraternal. Su forma redonda con «huesitos» se asocia con el ciclo de la vida y la muerte, y en la tradición católica se vincula con el cuerpo de Cristo.",s:"Fuente: INPI"},
-{id:"fruta",img:"fruta.jpg",x:70,y:47,w:15,nv:"Nivel 4 · Dulces, pan y fruta",t:"La fruta",
- d:"Compartir con los difuntos la fruta, el pan y los platillos de temporada es el corazón de la ofrenda. Representa los frutos de la tierra y el cariño de quienes los reciben.",s:"Fuente: INPI / UNAM"},
-{id:"sal",img:"sal.jpg",x:31,y:58,w:11,nv:"Nivel 3 · Purificación",t:"La sal",
- d:"Es un elemento de purificación: ayuda a que el cuerpo no se corrompa durante el viaje de ida y vuelta de las ánimas, y aleja a los malos espíritus.",s:"Fuente: INPI / UNAM"},
-{id:"agua",img:"agua.jpg",x:69,y:58,w:10,nv:"Nivel 3 · Purificación",t:"El agua",
- d:"Se coloca un vaso con agua para mitigar la sed de las ánimas después de su largo recorrido. También simboliza la pureza y la fuente de la vida.",s:"Fuente: INPI / SEP"},
-{id:"copal",img:"copal.jpg",x:28,y:69,w:11,nv:"Nivel 2 · Sahumerio",t:"El copal",
- d:"Es una resina de origen prehispánico que se quema como sahumerio. Su humo limpia el lugar y aleja a los malos espíritus; es uno de los elementos indígenas de la ofrenda.",s:"Fuente: INPI / UNAM"},
-{id:"incienso",img:"incienso.jpg",x:72,y:69,w:11,nv:"Nivel 2 · Sahumerio",t:"El incienso",
- d:"Junto con el copal, su aroma purifica el espacio y guía a las ánimas hacia el altar. Representa la elevación de las oraciones.",s:"Fuente: INPI / SEP"},
-{id:"flores",img:"flores.jpg",x:50,y:91,w:20,nv:"Nivel 1 · Camino de flores",t:"Flores de cempasúchil",
- d:"Su nombre viene del náhuatl «cempohualxóchitl», «veinte flores». Su color intenso y su aroma guían a las ánimas de regreso al altar, y se forman caminos de pétalos desde la entrada hasta la ofrenda.",s:"Fuente: INPI / UNAM / Smithsonian Folklife"},
-{id:"papelpicado",img:"papelpicado.jpg",x:50,y:15,w:78,nv:"Decoración · Sobre el altar",t:"Papel picado",
+{id:"papelpicado",img:"papelpicado.jpg",x:48.3,y:4.2,w:78,nv:"Decoración · Sobre el altar",t:"Papel picado",
  d:"Da color y alegría a la ofrenda y, en la tradición, representa el elemento aire. Junto con el agua, la tierra (flores y frutos) y el fuego de las velas, reúne los cuatro elementos en el altar. Sus figuras recortadas, a menudo calaveras y flores, se mueven con el viento como una invitación a las ánimas.",s:"Fuente: SEP (aprende.gob.mx) y tradición popular"},
-{id:"tamales",img:"tamales.jpg",x:43,y:58,w:13,nv:"Nivel 3 · Comida y agua",t:"Tamales",
+{id:"arco",img:"arco.jpg",x:49.3,y:36.7,w:63,nv:"Cúspide del altar",t:"El arco",
+ d:"Se coloca en lo más alto del altar y simboliza la entrada al mundo de los muertos, el umbral que las ánimas cruzan para visitar a sus familias. Suele adornarse con flor de cempasúchil y otros elementos naturales.",s:"Tradición popular; varía por región"},
+{id:"crucifijo",img:"crucifijo.jpg",x:50.4,y:12.4,w:10,nv:"Nivel 7 · La cruz",t:"El crucifijo",
+ d:"La cruz se incorporó a la ofrenda después de la evangelización y se coloca en la parte superior. Puede formarse también con sal, ceniza o pétalos de cempasúchil; en el último caso simboliza purificación y la expiación de culpas pendientes.",s:"Fuente: tradición recopilada por Ecoosfera y medios que citan al INPI"},
+{id:"selena",img:"selena.jpg",x:50.7,y:31.5,w:20,nv:"Nivel 6 · Fotografías",t:"Selena Quintanilla",
+ d:"Selena Quintanilla-Pérez (Lake Jackson, Texas, 16 de abril de 1971 – Corpus Christi, 31 de marzo de 1995) fue cantante, compositora y empresaria, conocida como la «Reina de la música tejana». Ganó un Grammy por «Selena Live!» (1994) y su legado sigue vivo con millones de fans en México y Estados Unidos. En el altar, el retrato indica a quién está dedicada la ofrenda.",s:"Retrato: SEP (aprende.gob.mx). Datos biográficos: verificar en Handbook of Texas / Biblioteca del Congreso"},
+{id:"calavera",img:"calavera.jpg",x:45.4,y:41.4,w:7,nv:"Nivel 4 · Dulces, pan y fruta",t:"Calaverita de azúcar",
+ d:"Las calaveritas de azúcar representan el afecto hacia el difunto y la forma mesoamericana de entender la muerte como parte de la vida. Muchas llevan el nombre de la persona recordada.",s:"Fuente: SEP (aprende.gob.mx)"},
+{id:"dulces",img:"dulces.jpg",x:55.9,y:44.2,w:15,nv:"Nivel 4 · Dulces, pan y fruta",t:"Dulces y golosinas",
+ d:"Se ofrecen los dulces y platillos que al difunto le gustaban en vida. Es una forma de compartir con él y de recordarlo con cariño; en los niños, los juguetes y dulces son parte esencial.",s:"Fuente: INPI / UNAM"},
+{id:"pan",img:"pan.jpg",x:36.9,y:42.6,w:11,nv:"Nivel 4 · Dulces, pan y fruta",t:"Pan de muerto",
+ d:"El INPI lo describe como un ofrecimiento fraternal. Su forma redonda con «huesitos» se asocia con el ciclo de la vida y la muerte, y en la tradición católica se vincula con el cuerpo de Cristo.",s:"Fuente: INPI"},
+{id:"fruta",img:"fruta.jpg",x:66.3,y:42.2,w:13,nv:"Nivel 4 · Dulces, pan y fruta",t:"La fruta",
+ d:"Compartir con los difuntos la fruta, el pan y los platillos de temporada es el corazón de la ofrenda. Representa los frutos de la tierra y el cariño de quienes los reciben.",s:"Fuente: INPI / UNAM"},
+{id:"sal",img:"sal.jpg",x:33,y:55,w:11,nv:"Nivel 3 · Purificación",t:"La sal",
+ d:"Es un elemento de purificación: ayuda a que el cuerpo no se corrompa durante el viaje de ida y vuelta de las ánimas, y aleja a los malos espíritus.",s:"Fuente: INPI / UNAM"},
+{id:"agua",img:"agua.jpg",x:70.6,y:54.7,w:10,nv:"Nivel 3 · Purificación",t:"El agua",
+ d:"Se coloca un vaso con agua para mitigar la sed de las ánimas después de su largo recorrido. También simboliza la pureza y la fuente de la vida.",s:"Fuente: INPI / SEP"},
+{id:"copal",img:"copal.jpg",x:29.4,y:67.4,w:11,nv:"Nivel 2 · Sahumerio",t:"El copal",
+ d:"Es una resina de origen prehispánico que se quema como sahumerio. Su humo limpia el lugar y aleja a los malos espíritus; es uno de los elementos indígenas de la ofrenda.",s:"Fuente: INPI / UNAM"},
+{id:"incienso",img:"incienso.jpg",x:70.3,y:67.3,w:11,nv:"Nivel 2 · Sahumerio",t:"El incienso",
+ d:"Junto con el copal, su aroma purifica el espacio y guía a las ánimas hacia el altar. Representa la elevación de las oraciones.",s:"Fuente: INPI / SEP"},
+{id:"flores",img:"flores.jpg",x:50.6,y:84.2,w:16,nv:"Nivel 1 · Camino de flores",t:"Flores de cempasúchil",
+ d:"Su nombre viene del náhuatl «cempohualxóchitl», «veinte flores». Su color intenso y su aroma guían a las ánimas de regreso al altar, y se forman caminos de pétalos desde la entrada hasta la ofrenda.",s:"Fuente: INPI / UNAM / Smithsonian Folklife"},
+{id:"tamales",img:"tamales.jpg",x:44.5,y:54.1,w:13,nv:"Nivel 3 · Comida y agua",t:"Tamales",
  d:"La comida es uno de los elementos indígenas de la ofrenda. Los tamales, hechos de maíz —alimento fundamental de Mesoamérica—, se ofrecen calientes para que las ánimas disfruten su aroma. Se comparten después con la familia, como un banquete entre vivos y muertos.",s:"Fuente: INPI / UNAM"},
-{id:"mole",img:"mole.jpg",x:57,y:58,w:13,nv:"Nivel 3 · Comida y agua",t:"Mole y platillos favoritos",
+{id:"mole",img:"mole.jpg",x:58.7,y:54.4,w:13,nv:"Nivel 3 · Comida y agua",t:"Mole y platillos favoritos",
  d:"Se colocan los guisos que el difunto disfrutaba en vida, como mole, pollo o arroz. Servir su platillo preferido es una forma de decirle que se le espera y se le recuerda con cariño.",s:"Fuente: INPI (vía UnoTV)"},
-{id:"atole",img:"atole.jpg",x:40,y:69,w:10,nv:"Nivel 2 · Bebidas y sahumerio",t:"Atole y chocolate",
+{id:"atole",img:"atole.jpg",x:41.2,y:68,w:10,nv:"Nivel 2 · Bebidas y sahumerio",t:"Atole y chocolate",
  d:"Las bebidas calientes de maíz y cacao, como el atole o el champurrado, son parte de la comida ofrecida a las ánimas. Acompañan al pan de muerto y reconfortan a quienes llegan de un largo viaje.",s:"Fuente: INPI / tradición popular"},
-{id:"tequila",img:"tequila.jpg",x:59,y:69,w:8,nv:"Nivel 2 · Bebidas y sahumerio",t:"La botella de tequila",
+{id:"tequila",img:"tequila.jpg",x:61.1,y:67.4,w:8,nv:"Nivel 2 · Bebidas y sahumerio",t:"La botella de tequila",
  d:"Según el INPI, a los adultos se les ofrece también su bebida favorita. La botella de tequila, mezcal o el licor que le gustaba a la persona recordada acompaña a la ofrenda como un brindis simbólico entre quienes están y quienes se fueron.",s:"Fuente: INPI"},
-{id:"vasot",img:"vasot.jpg",x:50,y:69,w:7,nv:"Nivel 2 · Bebidas y sahumerio",t:"Tequila con limón",
+{id:"vasot",img:"vasot.jpg",x:51.7,y:67.3,w:7,nv:"Nivel 2 · Bebidas y sahumerio",t:"Tequila con limón",
  d:"El vasito servido, con su limón al lado, invita a las ánimas a brindar: la bebida se ofrece lista para disfrutarse, como se le serviría a la persona en vida. Su aroma, igual que el del copal y el de la comida, forma parte de lo que atrae a las ánimas.",s:"Fuente: INPI / tradición popular"},
-{id:"xolo",img:"xolo.jpg",x:17,y:91,w:15,nv:"Nivel 1 · Al pie del altar",t:"Xoloitzcuintle, el perro guía",
+{id:"xolo",img:"xolo.jpg",x:20.9,y:82.1,w:15,nv:"Nivel 1 · Al pie del altar",t:"Xoloitzcuintle, el perro guía",
  d:"En la tradición mexica, el perro xoloitzcuintle acompañaba al difunto en su viaje por el Mictlán y lo ayudaba a cruzar el río del inframundo. Por eso muchas familias colocan una figura de perrito en la ofrenda.",s:"Tradición mexica (verificar con INAH / UNAM)"},
-{id:"rosas",img:"rosas.jpg",x:34,y:90,w:14,nv:"Nivel 1 · Recuerdos de Selena",t:"Rosas rojas",
+{id:"rosas",img:"rosas.jpg",x:34.7,y:81.8,w:14,nv:"Nivel 1 · Recuerdos de Selena",t:"Rosas rojas",
  d:"Las rosas rojas son una de las ofrendas más frecuentes que sus seguidores le dejan a Selena en su memorial de Corpus Christi, Texas. Aquí acompañan al cempasúchil como símbolo de amor y de cariño duradero hacia ella.",s:"Dato general sobre homenajes a Selena; verificar en prensa de Corpus Christi"},
-{id:"disco",img:"disco.jpg",x:64,y:90,w:11,nv:"Nivel 1 · Recuerdos de Selena",t:"Su música",
+{id:"disco",img:"disco.jpg",x:65.3,y:81.6,w:11,nv:"Nivel 1 · Recuerdos de Selena",t:"Su música",
  d:"La ofrenda incluye fotografías y objetos personales del difunto. Para Selena, nada la representa mejor que su música: «Amor Prohibido» (1994), con éxitos como «Bidi Bidi Bom Bom» y «No Me Queda Más», y «Selena Live!», con el que ganó un Grammy.",s:"Objetos personales: INPI. Discografía: verificar en Billboard / Recording Academy"},
-{id:"microfono",img:"microfono.jpg",x:86,y:90,w:8,nv:"Nivel 1 · Recuerdos de Selena",t:"Su micrófono",
+{id:"microfono",img:"microfono.jpg",x:84.9,y:81.7,w:8,nv:"Nivel 1 · Recuerdos de Selena",t:"Su micrófono",
  d:"Los objetos que el difunto usaba en vida ayudan a reconocerlo cuando visita la ofrenda. El micrófono recuerda a la «Reina de la música tejana» sobre el escenario; su último concierto fue en el Astrodomo de Houston, el 26 de febrero de 1995.",s:"Objetos personales: INPI / UnoTV. Concierto: verificar en Handbook of Texas"},
-{id:"casete",img:"casete.jpg",x:75,y:90,w:9,nv:"Nivel 1 · Recuerdos de Selena",t:"Su casete",
+{id:"casete",img:"casete.jpg",x:75.2,y:81.5,w:9,nv:"Nivel 1 · Recuerdos de Selena",t:"Su casete",
  d:"Los casetes fueron uno de los formatos con los que la música tejana llegó a miles de hogares en los años ochenta y noventa, la época en la que Selena creció como artista. Es un objeto de su tiempo que, como en toda ofrenda, ayuda a recordar lo que la persona amaba.",s:"Objetos personales: INPI. Contexto histórico: verificar en Handbook of Texas"}
 ];
 /* velas decorativas (gif) repartidas por el altar */
-const VELAS=[[18,36,7],[82,36,7],[20,47,7],[80,47,7],[22,58,7],[78,58,7],[20,69,7],[80,69,7]];
+const VELAS=[[34.5,30.4,7],[65.5,30.2,7],[29.2,41.7,7],[73,42.2,7],[25,53.6,7],[76.3,53.8,7],[22.4,66.7,7],[79.7,66.9,7]];
 /* Carpeta de las imágenes. Junto al index.html déjalo vacío ""; si estuvieran en una carpeta: "img/" */
 const IMG_DIR="";
-const stage=document.getElementById("stage"),M=document.getElementById("modal"),hint=document.getElementById("hint");
+const stage=document.getElementById("altar"),M=document.getElementById("modal"),hint=document.getElementById("hint");
 
 /* papel picado y pétalos flotantes de fondo */
 (function(){const c=["#ff7a00","#d6246e","#7b2cbf","#10b8a6","#ffd23f","#6ab04c"],n=Math.max(8,Math.ceil(innerWidth/72)),p=document.getElementById("picado");
@@ -211,14 +223,46 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")cerrar()});
 /* ===== modo edición: index.html?edit ===== */
 const EDIT=location.search.includes("edit");
 function setupEdit(){
- hint.textContent="MODO EDICIÓN: arrastra los elementos; los números salen en la consola (F12).";
- document.querySelectorAll(".it").forEach(b=>{b.style.touchAction="none";
-  b.onpointerdown=e=>{e.preventDefault();b.setPointerCapture(e.pointerId);
-   b.onpointermove=ev=>{const r=stage.getBoundingClientRect(),w=parseFloat(b.style.width);
-    b.style.left=((ev.clientX-r.left)/r.width*100-w/2).toFixed(1)+"%";
-    b.style.bottom=(100-(ev.clientY-r.top+b.offsetHeight/2)/r.height*100).toFixed(1)+"%"};
-   b.onpointerup=()=>{b.onpointermove=null;const w=parseFloat(b.style.width);
-    console.log(b.id.slice(3)+": x:"+(parseFloat(b.style.left)+w/2).toFixed(1)+", y:"+(100-parseFloat(b.style.bottom)).toFixed(1)+", w:"+w)}}});
+ document.body.classList.add("edit");
+ hint.textContent="MODO EDICIÓN: arrastra velas y elementos (también al margen del altar). Toca uno para elegirlo y cambia su tamaño con + y −.";
+ const P=document.createElement("div");P.className="ep";
+ P.innerHTML='<div class="eh"><b id="esel">Sin selección</b><span><button id="em">−</button><button id="ep2">+</button><button id="ea">Aplicar</button><button id="ec">Copiar todo</button><button id="er">Reiniciar</button></span></div><textarea id="eo" spellcheck="false" placeholder="Pega aquí tus coordenadas y toca Aplicar"></textarea>';
+ document.body.appendChild(P);
+ const eo=P.querySelector("#eo"),esel=P.querySelector("#esel"),num=v=>parseFloat(v);let sel=null;
+ function salida(){
+  const L=[...document.querySelectorAll(".it")].map(b=>{const w=num(b.style.width);return `${b.id.slice(3)}: x:${(num(b.style.left)+w/2).toFixed(1)}, y:${(100-num(b.style.bottom)).toFixed(1)}, w:${w}`});
+  const V=[...document.querySelectorAll(".vela")].map(v=>`[${num(v.style.left).toFixed(1)},${num(v.style.top).toFixed(1)},${num(v.style.width)}]`);
+  eo.value=L.join("\n")+"\n\nVELAS=["+V.join(",")+"]";try{localStorage.setItem("altar-edit",eo.value)}catch(e){}}
+ function aplicar(t){let ni=0,nv=0;
+  const f=(id,x,y,w)=>{const b=document.getElementById("it-"+id);if(!b)return;x=+x;y=+y;w=+w;b.style.width=w+"%";b.style.left=(x-w/2).toFixed(1)+"%";b.style.bottom=(100-y).toFixed(1)+"%";ni++};
+  for(const m of t.matchAll(/^\s*([a-z0-9_]+)\s*:\s*x\s*:\s*(-?[\d.]+)\s*,\s*y\s*:\s*(-?[\d.]+)\s*,\s*w\s*:\s*([\d.]+)/gim))f(m[1],m[2],m[3],m[4]);
+  for(const m of t.matchAll(/id:"([a-z0-9_]+)"[^}]*?x:\s*(-?[\d.]+)\s*,\s*y:\s*(-?[\d.]+)\s*,\s*w:\s*([\d.]+)/gi))f(m[1],m[2],m[3],m[4]);
+  const mv=t.match(/VELAS\s*=\s*(\[[\s\S]*?\]\s*\])/);
+  if(mv){try{JSON.parse(mv[1]).forEach((a,i)=>{const v=document.querySelectorAll(".vela")[i];if(!v)return;v.style.left=a[0]+"%";v.style.top=a[1]+"%";v.style.width=a[2]+"%";nv++})}catch(e){}}
+  esel.textContent="Aplicado: "+ni+" elementos, "+nv+" velas"}
+ let g=null;try{g=localStorage.getItem("altar-edit")}catch(e){}
+ if(g)aplicar(g);
+ salida();
+ function elegir(el,name){sel=el;esel.textContent=name;document.querySelectorAll(".sel").forEach(e=>e.classList.remove("sel"));el.classList.add("sel")}
+ function arrastrar(el,nombre,pos){el.style.touchAction="none";el.ondragstart=e=>e.preventDefault();
+  el.querySelectorAll("img").forEach(i=>{i.draggable=false});
+  el.onpointerdown=e=>{e.preventDefault();elegir(el,nombre);el.setPointerCapture(e.pointerId);
+   const ev=["pointermove","pointerup","pointercancel","lostpointercapture"];
+   const mover=x=>{pos(x,stage.getBoundingClientRect());salida()};
+   const fin=()=>{ev.forEach((t,k)=>el.removeEventListener(t,k?fin:mover));salida()};
+   ev.forEach((t,k)=>el.addEventListener(t,k?fin:mover))}}
+ document.querySelectorAll(".it").forEach(b=>arrastrar(b,b.id.slice(3),(ev,r)=>{const w=num(b.style.width);
+  b.style.left=((ev.clientX-r.left)/r.width*100-w/2).toFixed(1)+"%";
+  b.style.bottom=(100-(ev.clientY-r.top+b.offsetHeight/2)/r.height*100).toFixed(1)+"%"}));
+ document.querySelectorAll(".vela").forEach((v,i)=>{v.style.pointerEvents="auto";v.style.cursor="grab";
+  arrastrar(v,"vela "+(i+1),(ev,r)=>{v.style.left=((ev.clientX-r.left)/r.width*100).toFixed(1)+"%";
+   v.style.top=((ev.clientY-r.top+v.offsetHeight/2)/r.height*100).toFixed(1)+"%"})});
+ function tam(d){if(!sel)return;const w=Math.max(2,num(sel.style.width)+d);
+  if(sel.classList.contains("it")){const c=num(sel.style.left)+num(sel.style.width)/2;sel.style.width=w+"%";sel.style.left=(c-w/2).toFixed(1)+"%"}else sel.style.width=w+"%";salida()}
+ P.querySelector("#em").onclick=()=>tam(-1);P.querySelector("#ep2").onclick=()=>tam(1);
+ const bc=P.querySelector("#ec");
+ bc.onclick=async()=>{try{await navigator.clipboard.writeText(eo.value)}catch(e){eo.select();document.execCommand("copy")}bc.textContent="¡Copiado!";setTimeout(()=>bc.textContent="Copiar todo",1500)}; P.querySelector("#ea").onclick=()=>{aplicar(eo.value);salida()};
+ P.querySelector("#er").onclick=()=>{try{localStorage.removeItem("altar-edit")}catch(e){}location.reload()};
 }
 if(EDIT)setupEdit();
 </script>
